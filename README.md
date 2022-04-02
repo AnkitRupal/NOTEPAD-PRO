@@ -1,0 +1,1 @@
+The repository features the source code of NOTEPAD-PRO.
