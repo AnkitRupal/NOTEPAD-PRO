@@ -229,9 +229,34 @@ def find(event=None):
     find_btn.grid(row=2, column=0, padx=8, pady=4)
     replace_btn.grid(row=2, column=1, padx=8, pady=4)
 
+def hide_tool_bar():
+    global Show_Tool_Bar, Show_Status_Bar
+    if Show_Tool_Bar:
+        toolbars_label.pack_forget()
+        Show_Tool_Bar = False
+    else:
+        text_editor.pack_forget()
+        status_bar.pack_forget()
+        toolbars_label.pack(side=tk.TOP, fill=tk.X)
+        text_editor.pack(fill=tk.BOTH, expand=True)
+        if Show_Status_Bar:
+            status_bar.pack(side=tk.BOTTOM)
+        Show_Tool_Bar = True
+
+def hide_status_bar():
+    global Show_Status_Bar, Show_Tool_Bar
+    if Show_Status_Bar:
+        status_bar.pack_forget()
+        Show_Status_Bar = False
+    else:
+        status_bar.pack(side=tk.BOTTOM)
+        Show_Status_Bar = True
+
 
 
 '''ENDING DEFINING FUNCTIONS'''
+
+
 
 main_app = tk.Tk()
 main_app.geometry("800x600")
@@ -303,10 +328,6 @@ EDIT MENU
 edit_menu = tk.Menu(main_menu,tearoff=False)
 main_menu.add_cascade(label="EDIT",menu=edit_menu)
 
-
-
-
-
 edit_menu.add_command(label="COPY", image=copy_icon, compound=tk.LEFT,
                       accelerator="Ctrl+C", command=lambda: text_editor.event_generate("<Control c>"))
 edit_menu.add_command(label="PASTE", image=paste_icon, compound=tk.LEFT,
@@ -325,11 +346,28 @@ VIEW MENU
         2) STATUS
 
 '''
+
+toolbars_label = ttk.Label(main_app)
+toolbars_label.pack(side=tk.TOP, fill=tk.X)
+
+status_bar = ttk.Label(main_app, text="STATUS BAR")
+status_bar.pack(side=tk.BOTTOM)
+
+#Hide ToolBar and StatusBar
+
+Show_Status_Bar = tk.BooleanVar()
+Show_Status_Bar.set(True)
+Show_Tool_Bar = tk.BooleanVar()
+Show_Tool_Bar.set(True)
+
 view_menu = tk.Menu(main_menu,tearoff=False)
 main_menu.add_cascade(label="VIEW",menu=view_menu)
 
-view_menu.add_checkbutton(label="TOOL BAR",image = copy_icon,compound = tk.LEFT)
-view_menu.add_checkbutton(label="STATUS",image = copy_icon,compound = tk.LEFT)
+view_menu.add_checkbutton(label="TOOL BAR", onvalue=1, offvalue=0,
+                          variable=Show_Tool_Bar, compound=tk.LEFT, command=hide_tool_bar)
+view_menu.add_checkbutton(label="STATUS BAR", onvalue=1, offvalue=0,
+                          variable=Show_Status_Bar, compound=tk.LEFT, command=hide_status_bar)
+
 
 '''
 COLOR THEME MENU
@@ -347,8 +385,6 @@ color_theme_menu.add_command(label="DARK RED",image = copy_icon,compound = tk.LE
 color_theme_menu.add_command(label="MONOKAI",image = copy_icon,compound = tk.LEFT)
 color_theme_menu.add_command(label="DARK BLUE",image = copy_icon,compound = tk.LEFT)
 
-toolbars_label=ttk.Label(main_app)
-toolbars_label.pack(side = tk.TOP, fill=tk.X)
 
 #fontbox
 
@@ -425,8 +461,6 @@ text_editor.config(yscrollcommand=scroll_bar.set)
 
 #status bar -> word and character count
 
-status_bar=ttk.Label(main_app,text="Status Bar")
-status_bar.pack(side=tk.BOTTOM)
 text_change=False
 text_editor.bind("<<Modified>>",change_word)
 
