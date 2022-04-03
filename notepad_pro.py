@@ -2,6 +2,7 @@
 
 from argparse import FileType
 from cgitb import text
+from dataclasses import replace
 from mailbox import mbox
 from textwrap import fill
 import tkinter as tk
@@ -11,6 +12,8 @@ import os
 from unicodedata import name
 from click import command
 import ntpath
+
+from soupsieve import match
 
 '''DEFINING FUNCTIONS'''
 
@@ -170,6 +173,63 @@ def exit_program(event=None):
     except:
         return
 
+def find(event=None):
+
+    def find_func():
+        word = find_input.get()
+        text_editor.tag_remove("match", "1.0", tk.END)
+        matches = 0
+        if word:
+            start_posn = "1.0"
+            while True:
+                start_posn = text_editor.search(
+                    word, start_posn, stopindex=tk.END)
+                if not start_posn:
+                    break
+                end_posn = f"{start_posn}+{len(word)}c"
+                text_editor.tag_add("match", start_posn, end_posn)
+                matches += 1
+                start_posn = end_posn
+                text_editor.tag_config(
+                    "match", foreground="red", background="blue")
+
+    def replace_func():
+        word = find_input.get()
+        replace_text = replace_input.get()
+        content = text_editor.get("1.0", tk.END)
+        new_content = content.replace(word, replace_text)
+        text_editor.delete("1.0", tk.END)
+        text_editor.insert("1.0", new_content)
+
+    #pop up window
+    find_pop_up = tk.Toplevel()
+    find_pop_up.geometry("450x200")
+    find_pop_up.title("FIND , REPLACE WORD")
+    find_pop_up.resizable(0, 0)
+
+    #frame for find screen
+    find_frame = ttk.LabelFrame(find_pop_up, text="Find and Replace Words")
+    find_frame.pack(pady=10, padx=10)
+
+    # find and replace labels
+    find_text_label = ttk.Label(find_frame, text="FIND")
+    replace_text_label = ttk.Label(find_frame, text="REPLACE")
+    find_text_label.grid(row=0, column=0, padx=4, pady=4)
+    replace_text_label.grid(row=1, column=0, padx=4, pady=4)
+
+    # find and replace text inputs
+    find_input = ttk.Entry(find_frame, width=35)
+    replace_input = ttk.Entry(find_frame, width=35)
+    find_input.grid(row=0, column=1, padx=4, pady=4)
+    replace_input.grid(row=1, column=1, padx=4, pady=4)
+
+    # find and replace buttons
+    find_btn = ttk.Button(find_frame, text="FIND", command=find_func)
+    replace_btn = ttk.Button(find_frame, text="REPLACE", command=replace_func)
+    find_btn.grid(row=2, column=0, padx=8, pady=4)
+    replace_btn.grid(row=2, column=1, padx=8, pady=4)
+
+
 
 '''ENDING DEFINING FUNCTIONS'''
 
@@ -243,11 +303,20 @@ EDIT MENU
 edit_menu = tk.Menu(main_menu,tearoff=False)
 main_menu.add_cascade(label="EDIT",menu=edit_menu)
 
-edit_menu.add_command(label="COPY",image = copy_icon,compound = tk.LEFT,accelerator="Ctrl+C")
-edit_menu.add_command(label="PASTE",image = paste_icon,compound = tk.LEFT,accelerator="Ctrl+V")
-edit_menu.add_command(label="CUT",image = cut_icon,compound = tk.LEFT,accelerator="Ctrl+X")
-edit_menu.add_command(label="CLEAR ALL",image = clear_all_icon,compound = tk.LEFT,accelerator="Ctrl+Shift+A")
-edit_menu.add_command(label="FIND",image = find_icon,compound = tk.LEFT,accelerator="Ctrl+F")
+
+
+
+
+edit_menu.add_command(label="COPY", image=copy_icon, compound=tk.LEFT,
+                      accelerator="Ctrl+C", command=lambda: text_editor.event_generate("<Control c>"))
+edit_menu.add_command(label="PASTE", image=paste_icon, compound=tk.LEFT,
+                      accelerator="Ctrl+V", command=lambda: text_editor.event_generate("<Control v>"))
+edit_menu.add_command(label="CUT", image=cut_icon, compound=tk.LEFT,
+                      accelerator="Ctrl+X", command=lambda: text_editor.event_generate("<Control x>"))
+edit_menu.add_command(label="CLEAR ALL", image=clear_all_icon, compound=tk.LEFT,
+                      accelerator="Ctrl+Shift+A", command=lambda: text_editor.delete(1.0,tk.END))
+edit_menu.add_command(label="FIND", image=find_icon, compound=tk.LEFT,
+                      accelerator="Ctrl+F", command=find)
 
 '''
 VIEW MENU
