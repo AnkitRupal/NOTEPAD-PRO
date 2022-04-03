@@ -1,17 +1,17 @@
 #Notepad Pro
 
 from argparse import FileType
+from cProfile import label
 from cgitb import text
 from dataclasses import replace
 from mailbox import mbox
 from textwrap import fill
 import tkinter as tk
-from tkinter import Grid, ttk
+from tkinter import Grid, StringVar, ttk
 from tkinter import font,colorchooser,filedialog,messagebox
 import os
 from unicodedata import name
 from click import command
-import ntpath
 
 from soupsieve import match
 
@@ -376,14 +376,38 @@ COLOR THEME MENU
         2) STATUS
 
 '''
+
+#COLOR THEME FUNCTION
+def color_theme_func():
+    get_theme=theme_choose.get()
+    color_tuple=color_dict.get(get_theme)
+    print(get_theme,color_tuple)
+    fg_color,bg_color=color_tuple[0],color_tuple[1]
+    text_editor.config(background=bg_color,fg=fg_color)
+
 color_theme_menu = tk.Menu(main_menu,tearoff=False)
+
+theme_choose = tk.StringVar(value='Light Default')
+
 main_menu.add_cascade(label="COLOR THEME",menu=color_theme_menu)
 
-color_theme_menu.add_command(label="DEFAULT LIGHT",image = copy_icon,compound = tk.LEFT)
-color_theme_menu.add_command(label="LIGHT PLUS",image = copy_icon,compound = tk.LEFT)
-color_theme_menu.add_command(label="DARK RED",image = copy_icon,compound = tk.LEFT)
-color_theme_menu.add_command(label="MONOKAI",image = copy_icon,compound = tk.LEFT)
-color_theme_menu.add_command(label="DARK BLUE",image = copy_icon,compound = tk.LEFT)
+# color_icons=(light_plus_icon,light_theme,icon,dark_theme_icon,red_theme_icon,monokia_theme_icon,night_theme_icon)
+
+color_dict = {
+    'Light Default': ('#000000', '#ffffff'),
+    'Light Plus': ('#474747', '#e0e0e0'),
+    'Dark': ('#c4c4c4', '#2d2d2d'),
+    'Red': ('#2d2d2d', '#ffe8e8'),
+    'Monokai': ('#d3b774', '#474747'),
+    'Night Blue': ('#ededed', '#6b9dc2')
+}
+
+cnt=0
+for i in color_dict:
+    color_theme_menu.add_radiobutton(
+        label=i, compound=tk.LEFT, image=copy_icon, command=color_theme_func,variable=theme_choose)
+    #,image=color_icons[count]
+    cnt+=1
 
 
 #fontbox
