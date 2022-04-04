@@ -264,6 +264,8 @@ main_app.title("untitled - NOTEPAD_PRO")
 
 main_menu = tk.Menu()
 
+main_app.wm_iconbitmap("notepad_pro.ico")
+
 '''IMPORTED ALL ICONS'''
 
 #File Menu Icons
@@ -281,8 +283,8 @@ clear_all_icon=tk.PhotoImage(file = "icons/clear_all_edit_icon.png")
 find_icon=tk.PhotoImage(file = "icons/find_edit_icon.png")
 
 #View Menu Icons
-# toolbar_icon=tk.PhotoImage(file="icons/")
-# statusbar_icon=tk.PhotoImage(file="icons/")
+toolbar_icon=tk.PhotoImage(file="icons/toolbar_icon.png")
+statusbar_icon=tk.PhotoImage(file="icons/status_bar_icon.png")
 
 #Color Theme
 # default_light_icon=tk.PhotoImage(file="icons/")
@@ -363,9 +365,9 @@ Show_Tool_Bar.set(True)
 view_menu = tk.Menu(main_menu,tearoff=False)
 main_menu.add_cascade(label="VIEW",menu=view_menu)
 
-view_menu.add_checkbutton(label="TOOL BAR", onvalue=1, offvalue=0,
+view_menu.add_checkbutton(label="TOOL BAR", image=toolbar_icon, onvalue=1, offvalue=0,
                           variable=Show_Tool_Bar, compound=tk.LEFT, command=hide_tool_bar)
-view_menu.add_checkbutton(label="STATUS BAR", onvalue=1, offvalue=0,
+view_menu.add_checkbutton(label="STATUS BAR",image=statusbar_icon, onvalue=1, offvalue=0,
                           variable=Show_Status_Bar, compound=tk.LEFT, command=hide_status_bar)
 
 
@@ -381,7 +383,6 @@ COLOR THEME MENU
 def color_theme_func():
     get_theme=theme_choose.get()
     color_tuple=color_dict.get(get_theme)
-    print(get_theme,color_tuple)
     fg_color,bg_color=color_tuple[0],color_tuple[1]
     text_editor.config(background=bg_color,fg=fg_color)
 
@@ -391,7 +392,17 @@ theme_choose = tk.StringVar(value='Light Default')
 
 main_menu.add_cascade(label="COLOR THEME",menu=color_theme_menu)
 
-# color_icons=(light_plus_icon,light_theme,icon,dark_theme_icon,red_theme_icon,monokia_theme_icon,night_theme_icon)
+
+#Color Theme
+
+light_default_theme_icon = tk.PhotoImage(file="icons/light_theme.png")
+light_plus_theme_icon = tk.PhotoImage(file="icons/light_theme_plus.png")
+dark_theme_icon = tk.PhotoImage(file="icons/dark_theme.png")
+red_theme_icon = tk.PhotoImage(file="icons/red_theme.png")
+monokai_theme_icon = tk.PhotoImage(file="icons/monokai_theme.png")
+night_blue_theme_icon = tk.PhotoImage(file="icons/night_blue_theme.png")
+
+color_icons=(light_default_theme_icon,light_plus_theme_icon,dark_theme_icon,red_theme_icon,monokai_theme_icon,night_blue_theme_icon)
 
 color_dict = {
     'Light Default': ('#000000', '#ffffff'),
@@ -405,8 +416,7 @@ color_dict = {
 cnt=0
 for i in color_dict:
     color_theme_menu.add_radiobutton(
-        label=i, compound=tk.LEFT, image=copy_icon, command=color_theme_func,variable=theme_choose)
-    #,image=color_icons[count]
+        label=i, compound=tk.LEFT, image=color_icons[cnt], command=color_theme_func,variable=theme_choose)
     cnt+=1
 
 
@@ -510,7 +520,5 @@ color_btn.configure(command=color)
 left_align_btn.configure(command=left_align)
 right_align_btn.configure(command=right_align)
 center_align_btn.configure(command=center_align)
-
-
 
 main_app.mainloop()
