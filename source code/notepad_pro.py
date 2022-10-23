@@ -12,7 +12,6 @@ from tkinter import font,colorchooser,filedialog,messagebox
 import os
 from unicodedata import name
 from click import command
-
 from soupsieve import match
 
 '''DEFINING FUNCTIONS'''
